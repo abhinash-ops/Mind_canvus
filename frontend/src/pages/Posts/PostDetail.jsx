@@ -152,7 +152,7 @@ const PostDetail = () => {
     )
   }
 
-  const backendBaseUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+  const backendBaseUrl = (import.meta.env.VITE_BACKEND_URL || "https://mind-canvus-backend-argn.onrender.com").replace(/\/$/, '');
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

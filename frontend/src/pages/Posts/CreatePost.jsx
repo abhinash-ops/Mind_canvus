@@ -24,7 +24,7 @@ const CreatePost = () => {
     formState: { errors }
   } = useForm()
 
-  const backendBaseUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+  const backendBaseUrl = (import.meta.env.VITE_BACKEND_URL || "https://mind-canvus-backend-argn.onrender.com").replace(/\/$/, '');
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
