@@ -37,10 +37,24 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // CORS configuration
+const buildAllowedOrigins = () => {
+  if (process.env.NODE_ENV === 'production') {
+    const envOrigins = (process.env.ALLOWED_ORIGINS || '').split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+    return envOrigins.length ? envOrigins : [];
+  }
+  return ['http://localhost:5173', 'http://localhost:3000'];
+};
+
+const allowedOrigins = new Set(buildAllowedOrigins());
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com'] 
-    : ['http://localhost:5173', 'http://localhost:3000'],
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // allow non-browser tools
+    const isAllowed = allowedOrigins.has(origin) || /\.vercel\.app$/.test(new URL(origin).hostname);
+    callback(isAllowed ? null : new Error('Not allowed by CORS'), isAllowed);
+  },
   credentials: true
 }));
 
