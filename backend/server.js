@@ -6,7 +6,16 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const cron = require('node-cron');
 const Post = require('./models/Post');
-require('dotenv').config({ path: './config.env' });
+const path = require('path');
+const fs = require('fs');
+
+// Load env from .env if present; fallback to config.env for backward compatibility
+(() => {
+  const envPath = fs.existsSync(path.join(__dirname, '.env'))
+    ? path.join(__dirname, '.env')
+    : path.join(__dirname, 'config.env');
+  require('dotenv').config({ path: envPath });
+})();
 
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
@@ -70,6 +79,11 @@ app.use('*', (req, res) => {
 });
 
 // Database connection
+if (!process.env.MONGODB_URI) {
+  console.error('Missing MONGODB_URI. Set it in backend/.env or backend/config.env');
+  process.exit(1);
+}
+
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('Connected to MongoDB');
