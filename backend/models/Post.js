@@ -87,7 +87,7 @@ const postSchema = new mongoose.Schema({
 postSchema.index({ author: 1, createdAt: -1 });
 postSchema.index({ category: 1, status: 1, publishedAt: -1 });
 postSchema.index({ status: 1, scheduledFor: 1 });
-postSchema.index({ slug: 1 });
+
 
 // Virtual for likes count
 postSchema.virtual('likesCount').get(function() {
