@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const originBase = (import.meta.env.VITE_BACKEND_URL
   ? `${import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')}/api`
-  : '/api')
+  : 'https://mind-canvus-backend-argn.onrender.com/api')
 
 const api = axios.create({
   baseURL: originBase,

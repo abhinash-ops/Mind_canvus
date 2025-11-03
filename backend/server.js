@@ -37,10 +37,20 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // CORS configuration
+const normalizeOrigin = (origin) => {
+  if (!origin) return '';
+  try {
+    const url = new URL(origin);
+    return `${url.protocol}//${url.host}`; // strip path/trailing slash
+  } catch {
+    return origin.replace(/\/$/, '');
+  }
+};
+
 const buildAllowedOrigins = () => {
   if (process.env.NODE_ENV === 'production') {
     const envOrigins = (process.env.ALLOWED_ORIGINS || '').split(',')
-      .map(s => s.trim())
+      .map(s => normalizeOrigin(s.trim()))
       .filter(Boolean);
     return envOrigins.length ? envOrigins : [];
   }
@@ -52,7 +62,10 @@ const allowedOrigins = new Set(buildAllowedOrigins());
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true); // allow non-browser tools
-    const isAllowed = allowedOrigins.has(origin) || /\.vercel\.app$/.test(new URL(origin).hostname);
+    const normalized = normalizeOrigin(origin);
+    let hostname = '';
+    try { hostname = new URL(origin).hostname; } catch {}
+    const isAllowed = allowedOrigins.has(normalized) || /\.vercel\.app$/.test(hostname);
     callback(isAllowed ? null : new Error('Not allowed by CORS'), isAllowed);
   },
   credentials: true
